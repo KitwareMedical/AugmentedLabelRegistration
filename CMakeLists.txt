@@ -19,6 +19,7 @@ include(${Slicer_USE_FILE})
 #-----------------------------------------------------------------------------
 # Extension modules
 add_subdirectory(AugmentedLabelRegistration)
+add_subdirectory(DistanceMapRegistration)
 ## NEXT_MODULE
 
 #-----------------------------------------------------------------------------
