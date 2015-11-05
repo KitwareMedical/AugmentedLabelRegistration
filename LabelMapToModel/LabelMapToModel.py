@@ -90,7 +90,7 @@ class LabelMapToModelWidget(ScriptedLoadableModuleWidget):
         self.applyButton.enabled = False
         parametersFormLayout.addRow(self.applyButton)
 
-        # connections
+        # Connections
         self.applyButton.connect('clicked(bool)', self.onApplyButton)
         self.inputSelector.connect(
             "currentNodeChanged(vtkMRMLNode*)", self.onSelect)
@@ -117,10 +117,6 @@ class LabelMapToModelWidget(ScriptedLoadableModuleWidget):
         logic.run(self.inputSelector.currentNode(), self.outputSelector.currentNode(
         ), imageThreshold, enableScreenshotsFlag)
 
-#
-# LabelMapToModelLogic
-#
-
 
 class LabelMapToModelLogic(ScriptedLoadableModuleLogic):
 
@@ -133,15 +129,12 @@ class LabelMapToModelLogic(ScriptedLoadableModuleLogic):
     https://github.com/Slicer/Slicer/blob/master/Base/Python/slicer/ScriptedLoadableModule.py
     """
 
-    def hasImageData(self, volumeNode):
-        """This is an example logic method that
-        returns true if the passed in volume
-        node has valid image data
-        """
-        if not volumeNode:
+    def hasImageData(self, labelMapNode):
+        """Returns true if the passed in volume node has valid image data."""
+        if not labelMapNode:
             logging.debug('hasImageData failed: no volume node')
             return False
-        if volumeNode.GetImageData() == None:
+        if labelMapNode.GetImageData() == None:
             logging.debug('hasImageData failed: no image data in volume node')
             return False
         return True
@@ -267,8 +260,8 @@ class LabelMapToModelTest(ScriptedLoadableModuleTest):
         #
         import urllib
         downloads = (
-            ('http://slicer.kitware.com/midas3/download?items=5767',
-             'FA.nrrd', slicer.util.loadVolume),
+            ('http://slicer.kitware.com/midas3/download?items=153172',
+             'BrainTumor_GBM_HG0003.mrb', slicer.util.loadScene),
         )
 
         for url, name, loader in downloads:
@@ -282,7 +275,7 @@ class LabelMapToModelTest(ScriptedLoadableModuleTest):
                 loader(filePath)
         self.delayDisplay('Finished with download and loading')
 
-        volumeNode = slicer.util.getNode(pattern="FA")
+        labelMapNode = slicer.util.getNode(pattern="Tissue Segmentation Volume")
         logic = LabelMapToModelLogic()
-        self.assertTrue(logic.hasImageData(volumeNode))
+        self.assertTrue(logic.hasImageData(labelMapNode))
         self.delayDisplay('Test passed!')
