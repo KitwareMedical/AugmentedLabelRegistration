@@ -15,18 +15,17 @@ class LabelMapToModel(ScriptedLoadableModule):
 
   def __init__(self, parent):
     ScriptedLoadableModule.__init__(self, parent)
-    self.parent.title = "LabelMapToModel" # TODO make this more human readable by adding spaces
-    self.parent.categories = ["Examples"]
+    self.parent.title = "Label Map To Model" # TODO make this more human readable by adding spaces
+    self.parent.categories = ["Surface Models"]
     self.parent.dependencies = []
-    self.parent.contributors = ["John Doe (AnyWare Corp.)"] # replace with "Firstname Lastname (Organization)"
+    self.parent.contributors = ["Matt McCormick (Kitware, Inc.)"] # replace with "Firstname Lastname (Organization)"
     self.parent.helpText = """
-    This is an example of scripted loadable module bundled in an extension.
-    It performs a simple thresholding on the input volume and optionally captures a screenshot.
+    Convert a Slicer Label Map image into a Slicer Model (mesh).
     """
     self.parent.acknowledgementText = """
-    This file was originally developed by Jean-Christophe Fillion-Robin, Kitware Inc.
-    and Steve Pieper, Isomics, Inc. and was partially funded by NIH grant 3P41RR013218-12S1.
-""" # replace with organization, grant and thanks.
+    This file was originally developed by Matthew McCormick, Kitware, Inc.
+    and was partially funded by NIH grant R41CA196565.
+"""
 
 #
 # LabelMapToModelWidget
