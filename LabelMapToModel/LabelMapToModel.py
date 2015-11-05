@@ -83,30 +83,7 @@ class LabelMapToModelWidget(ScriptedLoadableModuleWidget):
         parametersFormLayout.addRow("Output Model: ", self.outputSelector)
 
         #
-        # threshold value
-        #
-        self.imageThresholdSliderWidget = ctk.ctkSliderWidget()
-        self.imageThresholdSliderWidget.singleStep = 0.1
-        self.imageThresholdSliderWidget.minimum = -100
-        self.imageThresholdSliderWidget.maximum = 100
-        self.imageThresholdSliderWidget.value = 0.5
-        self.imageThresholdSliderWidget.setToolTip(
-            "Set threshold value for computing the output image. Voxels that have intensities lower than this value will set to zero.")
-        parametersFormLayout.addRow(
-            "Image threshold", self.imageThresholdSliderWidget)
-
-        #
-        # check box to trigger taking screen shots for later use in tutorials
-        #
-        self.enableScreenshotsFlagCheckBox = qt.QCheckBox()
-        self.enableScreenshotsFlagCheckBox.checked = 0
-        self.enableScreenshotsFlagCheckBox.setToolTip(
-            "If checked, take screen shots for tutorials. Use Save Data to write them to disk.")
-        parametersFormLayout.addRow(
-            "Enable Screenshots", self.enableScreenshotsFlagCheckBox)
-
-        #
-        # Apply Button
+        # Apply button
         #
         self.applyButton = qt.QPushButton("Apply")
         self.applyButton.toolTip = "Run the algorithm."
