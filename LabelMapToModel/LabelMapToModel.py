@@ -7,10 +7,6 @@ import slicer
 from slicer.ScriptedLoadableModule import *
 import logging
 
-#
-# LabelMapToModel
-#
-
 
 class LabelMapToModel(ScriptedLoadableModule):
 
@@ -33,10 +29,6 @@ class LabelMapToModel(ScriptedLoadableModule):
     This file was originally developed by Matthew McCormick, Kitware, Inc.
     and was partially funded by NIH grant R41CA196565.
 """
-
-#
-# LabelMapToModelWidget
-#
 
 
 class LabelMapToModelWidget(ScriptedLoadableModuleWidget):
@@ -61,10 +53,10 @@ class LabelMapToModelWidget(ScriptedLoadableModuleWidget):
         parametersFormLayout = qt.QFormLayout(parametersCollapsibleButton)
 
         #
-        # input volume selector
+        # Input label map selector
         #
         self.inputSelector = slicer.qMRMLNodeComboBox()
-        self.inputSelector.nodeTypes = ["vtkMRMLScalarVolumeNode"]
+        self.inputSelector.nodeTypes = ["vtkMRMLLabelMapVolumeNode"]
         self.inputSelector.selectNodeUponCreation = True
         self.inputSelector.addEnabled = False
         self.inputSelector.removeEnabled = False
@@ -72,8 +64,8 @@ class LabelMapToModelWidget(ScriptedLoadableModuleWidget):
         self.inputSelector.showHidden = False
         self.inputSelector.showChildNodeTypes = False
         self.inputSelector.setMRMLScene(slicer.mrmlScene)
-        self.inputSelector.setToolTip("Pick the input to the algorithm.")
-        parametersFormLayout.addRow("Input Volume: ", self.inputSelector)
+        self.inputSelector.setToolTip("Pick the input label map.")
+        parametersFormLayout.addRow("Input Label Map: ", self.inputSelector)
 
         #
         # output volume selector
