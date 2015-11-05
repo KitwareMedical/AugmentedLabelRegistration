@@ -68,10 +68,10 @@ class LabelMapToModelWidget(ScriptedLoadableModuleWidget):
         parametersFormLayout.addRow("Input Label Map: ", self.inputSelector)
 
         #
-        # output volume selector
+        # Output model selector
         #
         self.outputSelector = slicer.qMRMLNodeComboBox()
-        self.outputSelector.nodeTypes = ["vtkMRMLScalarVolumeNode"]
+        self.outputSelector.nodeTypes = ["vtkMRMLModelNode"]
         self.outputSelector.selectNodeUponCreation = True
         self.outputSelector.addEnabled = True
         self.outputSelector.removeEnabled = True
@@ -79,8 +79,8 @@ class LabelMapToModelWidget(ScriptedLoadableModuleWidget):
         self.outputSelector.showHidden = False
         self.outputSelector.showChildNodeTypes = False
         self.outputSelector.setMRMLScene(slicer.mrmlScene)
-        self.outputSelector.setToolTip("Pick the output to the algorithm.")
-        parametersFormLayout.addRow("Output Volume: ", self.outputSelector)
+        self.outputSelector.setToolTip("Pick the output model.")
+        parametersFormLayout.addRow("Output Model: ", self.outputSelector)
 
         #
         # threshold value
