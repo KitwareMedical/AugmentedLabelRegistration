@@ -1,5 +1,6 @@
 import os
 import unittest
+import itk
 import vtk
 import qt
 import ctk
@@ -112,10 +113,8 @@ class LabelMapToModelWidget(ScriptedLoadableModuleWidget):
 
     def onApplyButton(self):
         logic = LabelMapToModelLogic()
-        enableScreenshotsFlag = self.enableScreenshotsFlagCheckBox.checked
-        imageThreshold = self.imageThresholdSliderWidget.value
-        logic.run(self.inputSelector.currentNode(), self.outputSelector.currentNode(
-        ), imageThreshold, enableScreenshotsFlag)
+        logic.run(self.inputSelector.currentNode(),
+                  self.outputSelector.currentNode())
 
 
 class LabelMapToModelLogic(ScriptedLoadableModuleLogic):
@@ -139,84 +138,37 @@ class LabelMapToModelLogic(ScriptedLoadableModuleLogic):
             return False
         return True
 
-    def isValidInputOutputData(self, inputVolumeNode, outputVolumeNode):
-        """Validates if the output is not the same as input
-        """
-        if not inputVolumeNode:
-            logging.debug(
-                'isValidInputOutputData failed: no input volume node defined')
+    def isValidInputOutputData(self, inputLabelMap, outputModel):
+        """Validates that the inputs and outputs are present."""
+        if not inputLabelMap:
+            logging.debug('isValidInputOutputData failed: no input label map node defined')
             return False
-        if not outputVolumeNode:
-            logging.debug(
-                'isValidInputOutputData failed: no output volume node defined')
-            return False
-        if inputVolumeNode.GetID() == outputVolumeNode.GetID():
-            logging.debug(
-                'isValidInputOutputData failed: input and output volume is the same. Create a new volume for output to avoid this error.')
+        if not outputModel:
+            logging.debug('isValidInputOutputData failed: no output model node defined')
             return False
         return True
 
-    def takeScreenshot(self, name, description, type=-1):
-        # show the message even if not taking a screen shot
-        slicer.util.delayDisplay(
-            'Take screenshot: ' + description + '.\nResult is available in the Annotations module.', 3000)
-
-        lm = slicer.app.layoutManager()
-        # switch on the type to get the requested window
-        widget = 0
-        if type == slicer.qMRMLScreenShotDialog.FullLayout:
-            # full layout
-            widget = lm.viewport()
-        elif type == slicer.qMRMLScreenShotDialog.ThreeD:
-            # just the 3D window
-            widget = lm.threeDWidget(0).threeDView()
-        elif type == slicer.qMRMLScreenShotDialog.Red:
-            # red slice window
-            widget = lm.sliceWidget("Red")
-        elif type == slicer.qMRMLScreenShotDialog.Yellow:
-            # yellow slice window
-            widget = lm.sliceWidget("Yellow")
-        elif type == slicer.qMRMLScreenShotDialog.Green:
-            # green slice window
-            widget = lm.sliceWidget("Green")
-        else:
-            # default to using the full window
-            widget = slicer.util.mainWindow()
-            # reset the type so that the node is set correctly
-            type = slicer.qMRMLScreenShotDialog.FullLayout
-
-        # grab and convert to vtk image data
-        qpixMap = qt.QPixmap().grabWidget(widget)
-        qimage = qpixMap.toImage()
-        imageData = vtk.vtkImageData()
-        slicer.qMRMLUtils().qImageToVtkImageData(qimage, imageData)
-
-        annotationLogic = slicer.modules.annotations.logic()
-        annotationLogic.CreateSnapShot(name, description, type, 1, imageData)
-
-    def run(self, inputVolume, outputVolume, imageThreshold, enableScreenshots=0):
+    def run(self, inputLabelMap, outputModel):
         """
         Run the actual algorithm
         """
 
-        if not self.isValidInputOutputData(inputVolume, outputVolume):
+        if not self.isValidInputOutputData(inputLabelMap, outputModel):
             slicer.util.errorDisplay(
                 'Input volume is the same as output volume. Choose a different output volume.')
             return False
 
         logging.info('Processing started')
 
-        # Compute the thresholded output volume using the Threshold Scalar
-        # Volume CLI module
-        cliParams = {'InputVolume': inputVolume.GetID(), 'OutputVolume': outputVolume.GetID(
-        ), 'ThresholdValue': imageThreshold, 'ThresholdType': 'Above'}
-        cliNode = slicer.cli.run(
-            slicer.modules.thresholdscalarvolume, None, cliParams, wait_for_completion=True)
+        labelVtkData = inputLabelMap.GetImageData()
 
-        # Capture screenshot
-        if enableScreenshots:
-            self.takeScreenshot(
-                'LabelMapToModelTest-Start', 'MyScreenshot', -1)
+        if labelVtkData.GetScalarTypeAsString == 'unsigned char':
+            PixelType = itk.UC
+        else:
+            slicer.util.errorDisplay('Pixel type of the label map is not yet supported.')
+            return False
+
+        Dimension = 3
 
         logging.info('Processing completed')
 
@@ -278,4 +230,6 @@ class LabelMapToModelTest(ScriptedLoadableModuleTest):
         labelMapNode = slicer.util.getNode(pattern="Tissue Segmentation Volume")
         logic = LabelMapToModelLogic()
         self.assertTrue(logic.hasImageData(labelMapNode))
+        modelNode = slicer.vtkMRMLModelNode()
+        logic.run(labelMapNode, modelNode)
         self.delayDisplay('Test passed!')
